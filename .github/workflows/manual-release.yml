@@ -1,0 +1,63 @@
+name: Manual DLL release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Nueva etiqueta del release (ej. v0.2.0)"
+        required: true
+        type: string
+      prerelease:
+        description: "Marcar como prerelease"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: [self-hosted, Windows, X64, pcbs2-modding]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Validate local game path
+        shell: pwsh
+        env:
+          GAME_DIR: ${{ vars.PCBS2_GAME_DIR }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:GAME_DIR)) {
+            throw "Configure la variable PCBS2_GAME_DIR del repositorio."
+          }
+          $required = Join-Path $env:GAME_DIR "BepInEx\interop\Assembly-CSharp.dll"
+          if (-not (Test-Path -LiteralPath $required)) {
+            throw "No se encontraron los interop de BepInEx en PCBS2_GAME_DIR."
+          }
+
+      - name: Build mod
+        shell: pwsh
+        env:
+          GAME_DIR: ${{ vars.PCBS2_GAME_DIR }}
+        run: dotnet build -c Release /p:GameDir="$env:GAME_DIR" /p:SkipDeploy=true
+
+      - name: Stage release asset
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path release -Force | Out-Null
+          Copy-Item -LiteralPath "bin\Release\PCBS2MaxSalePrice.dll" -Destination "release\PCBS2MaxSalePrice.dll"
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          name: PCBS2 Max Sale Price ${{ inputs.tag }}
+          prerelease: ${{ inputs.prerelease }}
+          generate_release_notes: true
+          files: release/PCBS2MaxSalePrice.dll

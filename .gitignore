@@ -1,0 +1,13 @@
+bin/
+obj/
+.vs/
+.idea/
+*.user
+*.suo
+*.dll
+*.pdb
+*.zip
+*.log
+BepInEx/
+PCBuildingSimulator2/
+GameLibs/
