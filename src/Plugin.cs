@@ -12,7 +12,7 @@ namespace PCBS2MaxSalePrice
     {
         public const string Guid = "com.gabriel.pcbs2.maxsaleprice";
         public const string Name = "PCBS2 Max Sale Price";
-        public const string Version = "0.2.1";
+        public const string Version = "0.2.2";
 
         internal static new ManualLogSource Log;
         internal static ConfigEntry<KeyCode> RemoteSaleKey;

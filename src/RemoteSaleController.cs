@@ -35,12 +35,7 @@ namespace PCBS2MaxSalePrice
             try
             {
                 if (_showPicker)
-                {
-                    Cursor.visible = true;
-                    Cursor.lockState = CursorLockMode.None;
-                    _pickerWorkshop?.DisableWalking();
-                    _pickerWorkshop?.DisableMouseLook();
-                }
+                    MaintainPickerInput();
 
                 if (_showPicker && Input.GetKeyDown(KeyCode.Escape))
                     ClosePicker(true);
@@ -57,6 +52,20 @@ namespace PCBS2MaxSalePrice
                 Plugin.Log.LogError("[RemoteSale] Update: " + e);
                 FailTransfer("Error interno durante la venta remota.", true);
             }
+        }
+
+        private void LateUpdate()
+        {
+            if (_showPicker)
+                MaintainPickerInput();
+        }
+
+        private void MaintainPickerInput()
+        {
+            _pickerWorkshop?.DisableWalking();
+            _pickerWorkshop?.DisableMouseLook();
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
 
         private void CapturePcAndOpenPicker()
@@ -89,8 +98,8 @@ namespace PCBS2MaxSalePrice
                 _pickerWorkshop.DisableMouseLook();
             }
 
-            Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
 
             Plugin.Log.LogInfo($"[RemoteSale] PC capturado desde '{source.name}'. Mostradores={_saleSlots.Count}.");
         }
@@ -150,6 +159,7 @@ namespace PCBS2MaxSalePrice
                 DrawStatusMessage();
                 if (!_showPicker) return;
 
+                MaintainPickerInput();
                 GUI.depth = -1000;
                 float width = 460f;
                 float rowHeight = 46f;
