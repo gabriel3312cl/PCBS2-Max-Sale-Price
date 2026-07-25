@@ -18,6 +18,7 @@ namespace PCBS2MaxSalePrice
         private BenchSlot _destinationSlot;
         private ComputerSave _pendingComputer;
         private WorkshopController _workshop;
+        private WorkshopController _pickerWorkshop;
         private int _transferStage;
         private int _stageDeadlineFrame;
         private int _nextPriceOpenAttempt;
@@ -33,6 +34,14 @@ namespace PCBS2MaxSalePrice
         {
             try
             {
+                if (_showPicker)
+                {
+                    Cursor.visible = true;
+                    Cursor.lockState = CursorLockMode.None;
+                    _pickerWorkshop?.DisableWalking();
+                    _pickerWorkshop?.DisableMouseLook();
+                }
+
                 if (_showPicker && Input.GetKeyDown(KeyCode.Escape))
                     ClosePicker(true);
 
@@ -69,9 +78,17 @@ namespace PCBS2MaxSalePrice
             }
 
             _sourceSlot = source;
+            _pickerWorkshop = WorkshopController.Get();
             _showPicker = true;
             _previousCursorVisible = Cursor.visible;
             _previousCursorLock = Cursor.lockState;
+
+            if (_pickerWorkshop != null)
+            {
+                _pickerWorkshop.DisableWalking();
+                _pickerWorkshop.DisableMouseLook();
+            }
+
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
 
@@ -362,6 +379,12 @@ namespace PCBS2MaxSalePrice
         {
             if (!_showPicker) return;
             _showPicker = false;
+            if (_pickerWorkshop != null)
+            {
+                _pickerWorkshop.EnableWalking();
+                _pickerWorkshop.EnableMouseLook();
+                _pickerWorkshop = null;
+            }
             Cursor.visible = _previousCursorVisible;
             Cursor.lockState = _previousCursorLock;
             if (cancelled) Plugin.Log.LogInfo("[RemoteSale] Selector cancelado.");

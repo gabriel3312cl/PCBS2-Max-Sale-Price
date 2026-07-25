@@ -12,7 +12,7 @@ namespace PCBS2MaxSalePrice
     {
         public const string Guid = "com.gabriel.pcbs2.maxsaleprice";
         public const string Name = "PCBS2 Max Sale Price";
-        public const string Version = "0.2.0";
+        public const string Version = "0.2.1";
 
         internal static new ManualLogSource Log;
         internal static ConfigEntry<KeyCode> RemoteSaleKey;
@@ -31,7 +31,7 @@ namespace PCBS2MaxSalePrice
             host.AddComponent<MaxSalePriceController>();
             host.AddComponent<RemoteSaleController>();
 
-            Log.LogInfo($"[MaxSalePrice] v0.2.0 cargado. Venta remota='{RemoteSaleKey.Value}'.");
+            Log.LogInfo($"[MaxSalePrice] v{Version} cargado. Venta remota='{RemoteSaleKey.Value}'.");
         }
     }
 }
